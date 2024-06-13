@@ -1,7 +1,8 @@
+// getTokenが書かれているファイルからimport
+import { getToken } from './lib/spotify';
+
 export default function App() {
-  // 環境変数が渡せているかを確認
-  console.log(process.env.REACT_APP_SPOTIFY_CLIENT_ID);
-  console.log(process.env.REACT_APP_SPOTIFY_CLIENT_SECRET);
+  getToken();
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
