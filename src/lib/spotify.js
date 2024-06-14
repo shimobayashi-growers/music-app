@@ -25,9 +25,15 @@ class SpotifyClient {
         return spotify;
     }
 
-    // 適当な関数を作ってtokeの中身を確認
-    test() {
-        console.log(this.token);
+    // 人気の楽曲をプレイリストから取得
+    async getPopularSongs() {
+        const response = await axios.get(
+            'https://api.spotify.com/v1/playlists/37i9dQZF1DX9vYRBO9gjDe/tracks',
+            {
+                headers: { Authorization: 'Bearer ' + this.token },
+            }
+        );
+        return response.data;
     }
 }
 
