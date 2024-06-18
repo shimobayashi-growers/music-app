@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { SongList } from './components/SongList';
+import { Player } from './components/Player';
 import spotify from './lib/spotify';
 import { useRef } from 'react';
 
@@ -29,9 +30,25 @@ export default function App() {
       setSelectedSong(song);
       // preview_urlにあるmp3をclickしたら再生するように定義
       audioRef.current.src = song.preview_url;
+      playSong();
+    };
+
+    const playSong = () => {
       audioRef.current.play();
       setIsPlay(true);
-      console.log(song);
+    };
+
+    const pauseSong = () => {
+      audioRef.current.pause();
+      setIsPlay(false);
+    };
+
+    const toggleSong = () => {
+     if (isPlay) {
+      pauseSong();
+     } else {
+      playSong();
+     }
     };
 
   return (
@@ -49,6 +66,13 @@ export default function App() {
           />
         </section>
       </main>
+      {selectedSong != null && (
+        <Player
+          song={selectedSong}
+          isPlay={isPlay}
+          onButtonClick={toggleSong}
+        />
+      )}
       <audio ref={audioRef} />
     </div>
   );
