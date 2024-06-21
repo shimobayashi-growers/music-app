@@ -29,8 +29,14 @@ export default function App() {
     const handleSongSelected = async(song) => {
       setSelectedSong(song);
       // preview_urlにあるmp3をclickしたら再生するように定義
-      audioRef.current.src = song.preview_url;
-      playSong();
+      // preview_urlに曲がなければpauseする
+      if(song.preview_url != null) {
+        audioRef.current.src = song.preview_url;
+        playSong();
+      } else {
+        pauseSong();
+      }
+      
     };
 
     const playSong = () => {
