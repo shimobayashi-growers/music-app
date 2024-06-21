@@ -4,6 +4,9 @@ import { Player } from './components/Player';
 import spotify from './lib/spotify';
 import { useRef } from 'react';
 import { SearchInput } from './components/SearchInput';
+import { Pagination } from './components/Pagination';
+
+const limit = 20;
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,6 +16,7 @@ export default function App() {
   const [selectedSong, setSelectedSong] = useState();
   const [keyword, setKeyword] = useState('');
   const [searchedSongs, setSearchedSongs] = useState();
+  const [page, setPage] = useState(1);
   const audioRef = useRef(null);
   const isSearchedResult = searchedSongs != null;
 
@@ -65,14 +69,27 @@ export default function App() {
       setKeyword(e.target.value);
     };
 
-    const searchSongs = async () => {
+    const searchSongs = async (page) => {
       setIsLoading(true);
-      const result = await spotify.searchSongs(keyword);
+      const offset = parseInt(page) ? (parseInt(page) - 1) * limit : 0;
+      const result = await spotify.searchSongs(keyword, limit, offset);
       setSearchedSongs(result.items);
       setIsLoading(false); 
     }
+  
+    const moveToNext = async () => {
+      const nextPage = page + 1;
+      await searchSongs(nextPage);
+      setPage(nextPage);
+    }
 
-  return (
+    const moveToPrev = async () => {
+      const prevPage = page - 1;
+      await searchSongs(prevPage);
+      setPage(prevPage);
+    }
+
+    return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       <main className="flex-1 p-8 mb-20">
         <header className="flex justify-between items-center mb-10">
@@ -86,6 +103,9 @@ export default function App() {
             songs={isSearchedResult ? searchedSongs : popularSongs}
             onSongSelected={handleSongSelected}
           />
+          {isSearchedResult && (
+            <Pagination onPrev={moveToPrev} onNext={moveToNext} />
+          )}
         </section>
       </main>
       {selectedSong != null && (
