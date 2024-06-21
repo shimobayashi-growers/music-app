@@ -3,6 +3,7 @@ import { SongList } from './components/SongList';
 import { Player } from './components/Player';
 import spotify from './lib/spotify';
 import { useRef } from 'react';
+import { SearchInput } from './components/SearchInput';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -10,7 +11,10 @@ export default function App() {
   // 音楽の再生機能の定義
   const [isPlay, setIsPlay] = useState(false);
   const [selectedSong, setSelectedSong] = useState();
+  const [keyword, setKeyword] = useState('');
+  const [searchedSongs, setSearchedSongs] = useState();
   const audioRef = useRef(null);
+  const isSearchedResult = searchedSongs != null;
 
   useEffect(() => {
     fetchPopularSongs();
@@ -57,17 +61,29 @@ export default function App() {
      }
     };
 
+    const handleInputChange = (e) => {
+      setKeyword(e.target.value);
+    };
+
+    const searchSongs = async () => {
+      setIsLoading(true);
+      const result = await spotify.searchSongs(keyword);
+      setSearchedSongs(result.items);
+      setIsLoading(false); 
+    }
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       <main className="flex-1 p-8 mb-20">
         <header className="flex justify-between items-center mb-10">
           <h1 className="text-4xl font-bold">Music App</h1>
         </header>
+        <SearchInput onInputChange={handleInputChange} onSubmit={searchSongs} />
         <section>
-          <h2 className="text-2xl font-semibold mb-5">Popular Songs</h2>
+          <h2 className="text-2xl font-semibold mb-5">{isSearchedResult ? "Searched Results" : "Popular Songs"}</h2>
           <SongList
             isLoading={isLoading}
-            songs={popularSongs}
+            songs={isSearchedResult ? searchedSongs : popularSongs}
             onSongSelected={handleSongSelected}
           />
         </section>
